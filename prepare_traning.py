@@ -24,6 +24,15 @@ def prepare_traning_sku_color():
         size = str(data[3])
         sku = str(data[1])
 
+        unknow_string = "Non-existent"
+
+        if color == unknow_string:
+            color = ""
+        if size == unknow_string:
+            size = ""
+        if sku == unknow_string:
+            sku = ""
+
         data_filtered.append({'name': name, 'colors': [color], 'sku': sku, 'size': size})
         # print(name,sku)
         # if sku and sku not in sku_pushed:
