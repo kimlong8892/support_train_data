@@ -12,9 +12,8 @@ def tokenize_text(text):
     # """Tokenizes the input text into a list of tokens."""
     return re.findall(r'\w+(?:[_]\w+)*|\S', text)
 def prepare_traning_sku_color():
-    pre_data = pd.read_csv('data/datasets_sku_color_size_clone.csv').values
-
-    print(pre_data)
+    #pre_data = pd.read_csv('data/datasets_sku_color_size_clone.csv').values
+    pre_data = pd.read_csv('data/test/sheet_test.csv').values
 
     data_filtered = []
     sku_pushed = {}
@@ -33,7 +32,7 @@ def prepare_traning_sku_color():
         if sku == unknow_string:
             sku = ""
 
-        data_filtered.append({'name': name, 'colors': [color], 'sku': sku, 'size': size})
+        data_filtered.append({'name': name, 'color': color, 'sku': sku, 'size': size})
         # print(name,sku)
         # if sku and sku not in sku_pushed:
         #     sku_pushed[sku] = 1
@@ -41,9 +40,9 @@ def prepare_traning_sku_color():
     # print(data_filtered)
     # pd.DataFrame(data_filtered).to_csv('data/data_training.csv', index=False)
     result = []
+
     for data in data_filtered:
         tokens = tokenize_text(data['name'])
-        print(tokens)
         tmp = {
             "tokenized_text": tokens,
             "ner": [],
@@ -53,8 +52,25 @@ def prepare_traning_sku_color():
         start_index_size = None
         end_index_size = None
 
+        start_index_color = None
+        end_index_color = None
+
         for index, token in enumerate(tokens):
-            for color in data['colors']:
+            color = data["color"]
+
+            if " " in color:
+                index_color = 0
+
+                for color_split in color.split(" "):
+                    if token == color_split:
+                        if start_index_color is None:
+                            start_index_color = index
+
+                        if index_color == len(color.split(" ")) - 1:
+                            end_index_color = index
+
+                    index_color += 1
+            else:
                 if token == color:
                     tmp['ner'].append([index, index, 'Color'])
 
@@ -87,6 +103,10 @@ def prepare_traning_sku_color():
             else:
                 if token == data['size']:
                     tmp['ner'].append([index, index, 'SIZE'])
+
+        if start_index_color is not None and end_index_color is not None:
+            tmp['ner'].append([start_index_color, end_index_color, 'Color'])
+
         if start_index_sku is not None and end_index_sku is not None:
             tmp['ner'].append([start_index_sku, end_index_sku, 'SKU'])
 
