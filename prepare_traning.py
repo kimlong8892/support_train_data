@@ -26,7 +26,7 @@ def prepare_traning_sku_color():
 
         unknow_string = "Non-existent"
 
-        if color == unknow_string:
+        if color in [unknow_string, "No Color"]:
             color = ""
         if size == unknow_string:
             size = ""
