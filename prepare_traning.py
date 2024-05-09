@@ -12,7 +12,7 @@ def tokenize_text(text):
     # """Tokenizes the input text into a list of tokens."""
     return re.findall(r'\w+(?:[_]\w+)*|\S', text)
 def prepare_traning_sku_color():
-    pre_data = pd.read_csv('data/datasets_sku_color_size_link - datasets_sku_color_size_link.csv').values
+    pre_data = pd.read_csv('data/datasets_sku_color_size_link - datasets_sku_color_size_link (1).csv').values
     #pre_data = pd.read_csv('data/test/sheet_test.csv').values
 
     data_filtered = []
