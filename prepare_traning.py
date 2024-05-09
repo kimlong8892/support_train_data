@@ -12,7 +12,7 @@ def tokenize_text(text):
     # """Tokenizes the input text into a list of tokens."""
     return re.findall(r'\w+(?:[_]\w+)*|\S', text)
 def prepare_traning_sku_color():
-    pre_data = pd.read_csv('data/datasets_sku_color_size_link.csv').values
+    pre_data = pd.read_csv('data/datasets_sku_color_size_link - datasets_sku_color_size_link.csv').values
     #pre_data = pd.read_csv('data/test/sheet_test.csv').values
 
     data_filtered = []
@@ -40,6 +40,8 @@ def prepare_traning_sku_color():
     # print(data_filtered)
     # pd.DataFrame(data_filtered).to_csv('data/data_training.csv', index=False)
     result = []
+
+    print(len(data_filtered))
 
     for data in data_filtered:
         tokens = tokenize_text(data['name'])
@@ -117,7 +119,7 @@ def prepare_traning_sku_color():
             result.append(tmp)
             results.append(tmp)
 
-    with open('data/training_sku_color_size.json', 'w', encoding='utf8') as f:
+    with open('data/training_sku_color_size-09_05_2024.json', 'w', encoding='utf8') as f:
         json.dump(result, f, ensure_ascii=False)
 # def prepare_traning_color():
 #     pre_data = pd.read_csv('data/pre_data_color.csv').values
