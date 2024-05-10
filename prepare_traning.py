@@ -12,8 +12,9 @@ def tokenize_text(text):
     # """Tokenizes the input text into a list of tokens."""
     return re.findall(r'\w+(?:[_]\w+)*|\S', text)
 def prepare_traning_sku_color():
-    pre_data = pd.read_csv('data/datasets_sku_color_size_link - datasets_sku_color_size_link (1).csv').values
+    pre_data = pd.read_csv('data/datasets_sku_color_size_link - datasets_sku_color_size_link (3).csv').values
     #pre_data = pd.read_csv('data/test/sheet_test.csv').values
+    print(pre_data)
 
     data_filtered = []
     sku_pushed = {}
@@ -41,7 +42,7 @@ def prepare_traning_sku_color():
     # pd.DataFrame(data_filtered).to_csv('data/data_training.csv', index=False)
     result = []
 
-    print(len(data_filtered))
+    print(data_filtered)
 
     for data in data_filtered:
         tokens = tokenize_text(data['name'])
@@ -60,51 +61,35 @@ def prepare_traning_sku_color():
         for index, token in enumerate(tokens):
             color = data["color"]
 
-            if " " in color:
-                index_color = 0
+            index_color = 0
+            for color_split in tokenize_text(color):
+                if token == color_split:
+                    if start_index_color is None:
+                        start_index_color = index
 
-                for color_split in color.split(" "):
-                    if token == color_split:
-                        if start_index_color is None:
-                            start_index_color = index
+                    if index_color == len(tokenize_text(color)) - 1:
+                        end_index_color = index
+                index_color += 1
 
-                        if index_color == len(color.split(" ")) - 1:
-                            end_index_color = index
+            index_sku = 0
+            for sku in tokenize_text(data['sku']):
+                if token == sku:
+                    if start_index_sku is None:
+                        start_index_sku = index
 
-                    index_color += 1
-            else:
-                if token == color:
-                    tmp['ner'].append([index, index, 'Color'])
+                    if index_sku == len(tokenize_text(data['sku'])) - 1:
+                        end_index_sku = index
+                index_sku += 1
 
-            if " " in data['sku']:
-                index_sku = 0
+            index_size = 0
+            for size in tokenize_text(data['size']):
+                if token == size:
+                    if start_index_size is None:
+                        start_index_size = index
 
-                for sku in data['sku'].split(" "):
-                    if token == sku:
-                        if start_index_sku is None:
-                            start_index_sku = index
-
-                        if index_sku == len(data['sku'].split(" ")) - 1:
-                            end_index_sku = index
-                    index_sku += 1
-            else:
-                if token == data['sku']:
-                    tmp['ner'].append([index, index, 'SKU'])
-
-            if " " in data['size']:
-                index_size = 0
-
-                for sku in data['size'].split(" "):
-                    if token == sku:
-                        if start_index_size is None:
-                            start_index_size = index
-
-                        if index_size == len(data['size'].split(" ")) - 1:
-                            end_index_size = index
-                    index_size += 1
-            else:
-                if token == data['size']:
-                    tmp['ner'].append([index, index, 'SIZE'])
+                    if index_size == len(tokenize_text(data['size'])) - 1:
+                        end_index_size = index
+                index_size += 1
 
         if start_index_color is not None and end_index_color is not None:
             tmp['ner'].append([start_index_color, end_index_color, 'Color'])
@@ -113,7 +98,7 @@ def prepare_traning_sku_color():
             tmp['ner'].append([start_index_sku, end_index_sku, 'SKU'])
 
         if start_index_size is not None and end_index_size is not None:
-            tmp['ner'].append([start_index_size, end_index_size, 'SIZE'])
+            tmp['ner'].append([start_index_size, end_index_size, 'Size'])
 
         if len(tmp['ner']):
             result.append(tmp)
